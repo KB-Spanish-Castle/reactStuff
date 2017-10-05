@@ -1,22 +1,93 @@
 import React, { Component } from 'react';
 
-//api key 4 l8tr = 3d6b633422451393e953dab4052ea0e4
-//url 4 l8tr  - http://api.openweathermap.org/data/2.5/weather?q=Bozeman&appid= 
+//url 4 l8tr  - http://api.openweathermap.org/data/2.5/weather?q=Bozeman&appid=3d6b633422451393e953dab4052ea0e4
 
 class WeatherComponent extends React.Component{
   
   constructor(){
+    var url = "http://api.openweathermap.org/data/2.5/weather?q=Bozeman&units=imperial&appid=";
+    var apiKey = "3d6b633422451393e953dab4052ea0e4";
     super();
-  }
+    this.urlApi = url + apiKey;
+    this.state = {
+    weatherObj: {
+       
 
+    },
+    
+    data: 'loading...'
+    };
+  }
+  componentDidMount(){
+    fetch(this.urlApi).then(function(response){
+      return response.json();
+    }).then((weatherData)=>{
+      this.setState({
+        weatherObj:{
+          city: weatherData.name, 
+          temp: weatherData.main.temp, 
+          pressure: weatherData.main.pressure, 
+          humidity: weatherData.main.humidity, 
+          description: weatherData.weather[0].description
+          
+        },
+        data: weatherData.name
+      });
+    });
+
+  }
   render(){
+    let weatherHTML = null;
+    if (this.state.data === "loading...") {
+      weatherHTML = this.state.data;
+    } else {
+      weatherHTML = <Table weather={this.state.weatherObj}/>;
+    }
     return(
       <div>
-        this is your weather component
+        {weatherHTML}
       </div>   
       )
     }
 }
+
+class Table extends Component {
+  constructor(){
+
+    super();
+    
+  }
+  render(){
+    return(
+      <table>
+        <tbody>
+        <tr>
+        <td>{this.props.weather.city}</td>
+        </tr>
+        <tr>
+        <td>temp: {this.props.weather.temp}&deg;</td>
+        </tr> 
+        <tr>
+        <td>current conditions: {this.props.weather.description}</td>
+        </tr>
+        <tr>
+        <td>pressure: {this.props.weather.pressure}in</td>
+        </tr>
+        <tr>
+        <td>humidity: {this.props.weather.humidity}%</td>
+        </tr>
+         
+          
+        </tbody>
+      </table>
+    );
+  }
+}
+
+
+
+//  NAME OF CITY
+// TEMP PRESSURE  HUMIDITY  DESCRIPTION
 
 export default WeatherComponent;
 
